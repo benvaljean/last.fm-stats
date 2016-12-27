@@ -1,0 +1,57 @@
+body {
+                        margin: 10px 10px;
+                        background-color: #004080;
+                        color: #FFFBF0;
+                        font: 80% Tahoma;
+                        font-size: 0.75em;
+                        width: 900px;
+}
+
+a {
+        background-color: transparent;
+        color: #9BCDFF;
+}
+
+a:visited {
+        background-color: transparent;
+        color: #E1F0FF;
+}
+
+a:hover {
+background-color: transparent;
+color: #FFFFFF;
+}
+
+
+div#header h1 {
+        font-family: tahoma, arial, helvetica, sans-serif;
+        text-align: left;
+        background-color: transparent;
+        color: #FFFBF0;
+}
+div#toolbar h3 {
+        font-family: tahoma, arial, helvetica, sans-serif;
+        text-align: left;
+        background-color: transparent;
+        color: #FFFBF0;
+}
+
+p.footnote {
+        font-family: tahoma, arial, helvetica, sans-serif;
+        font-size: 1em;
+        text-align: right;
+        padding: 0 2em 0 0;
+}
+
+td {
+                        text-align:left;
+                        font: 80% Tahoma;
+                        font-size: 0.75em;
+                        padding:3px;
+}
+
+img.upperleft {
+  position: absolute;
+  top: 5;
+  left: 5;
+}
