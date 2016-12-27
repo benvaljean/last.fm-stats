@@ -62,7 +62,7 @@ if ($result->num_rows > 0) {
     $rank++;
     //echo '<tr><td>'. $rank . '</td><td>' . $row['count']. '</td><td>'. $row['artist']. '</td><td>'. $row['track'] . '</td></tr>';
 
-echo '<tr><td>'. $rank . '</td><td>' . $row['count']. '</td><td><a href="track.php?artist=' . $artist . '&track=' . addslashes($row['track']) . '">' . $row['track'] . '</a></td></tr>';
+echo '<tr><td>'. $rank . '</td><td>' . $row['count']. '</td><td><a href="track.php?artist=' . urlencode($artist) . '&track=' . urlencode($row['track']) . '">' . $row['track'] . '</a></td></tr>';
 
 
   }
