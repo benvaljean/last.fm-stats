@@ -1,15 +1,8 @@
 <?php
 define( 'MUSICSTATS', true );
-?>
-<html><head>
-<title>MP3Stats</title>
-<link rel="stylesheet" href="/musicstats.css">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta charset="utf-8">
-</head>
-<body>
-<?php
 include 'dbconnect.php';
+include 'header.php';
+
 $year=$_GET['year'];
 $month=$_GET['month'];
 if (strlen($month) == 0){
@@ -22,16 +15,8 @@ if (strlen($month) == 0){
 }
 ?>
 
-<center><h1>Mp3 Stats</h1>
-
 <h2>Most-played songs in <?php echo $monthtext . " " . $year; ?></h2>
 <?php
-
-$connect = new mysqli("localhost", "musicstats", "passwordhere", "musicstats");
-if (!$connect->set_charset("utf8")) {
-    printf("Error loading character set utf8: %s\n", $mysqli->error);
-}
-
 
 if ($doyear==1) {
   $query="select month(dt) as monthnumeric, monthname(dt) as month, count(1) as count from plays where year(dt)=$year group by month(dt) order by month(dt) asc";

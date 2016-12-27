@@ -1,22 +1,10 @@
-<html><head>
-<title>MP3Stats</title>
-<link rel="stylesheet" href="/musicstats.css">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta charset="utf-8">
-</head>
-<body>
 <?php
 $artist=$_GET['artist'];
-
+define( 'MUSICSTATS', true );
+include 'header.php';
+include 'dbconnect.php';
 ?>
-<center>
-<h1>Mp3 Stats</h1>
 <h2><?php echo $artist . "</h2>";
-
-$connect = new mysqli("localhost", "musicstats", "passwordhere", "musicstats");
-if (!$connect->set_charset("utf8")) {
-    printf("Error loading character set utf8: %s\n", $mysqli->error);
-}
 
 echo '<table>';
 

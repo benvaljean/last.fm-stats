@@ -1,4 +1,8 @@
 <?php
+if( !defined( 'MUSICSTATS' ) ) {
+        echo "This file is part of MusicStats and is not a valid entry point\n";
+        die( 1 );
+}
 $header = <<<END
 <html><head>
 <title>Music Stats</title>
