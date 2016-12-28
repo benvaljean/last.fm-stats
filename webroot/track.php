@@ -5,44 +5,26 @@ include 'header.php';
 $track=$_GET['track'];
 $artist=$_GET['artist'];
 define( 'MUSICSTATS', true );
-?>
-<h2><?php echo $artist . " - " . $track . "</h2>";
+
+echo '<h2>' . $artist . ' - ' . $track . '</h2>';
 
 echo '<table>';
 
-#$query="select count(*) as count from plays where track='$track' and artist='$artist'";
 $query="select rank,plays from mostplayedrankings where track='$track' and artist='$artist'";
 $result = $connect->query($query);
 if ($result->num_rows > 0) {
-  // output data of each row from $result
   while($row = $result->fetch_assoc()) {
     echo '<tr><td><b>Total plays: </td><td>' . $row['plays'] . '</b></td></tr>';
     echo '<tr><td>Overall ranking: </td><td>' . $row['rank'] . '</tr></tr>';
-#	$plays=$row['count'];
   }
 }
 else {
   echo '0 results';
 }
-
-
-/* $query="select rank from mostplayedrankings where track='$track' and artist='$artist'";
-$result = $connect->query($query);
-if ($result->num_rows > 0) {
-  // output data of each row from $result
-  while($row = $result->fetch_assoc()) {
-    echo '<tr><td>Overall ranking:</td><td>' . $row['rank'] . '</td></tr>';
-  }
-}
-else {
-  echo '0 results';
-}
-*/
 
 $query="select min(dt) as first,max(dt) as last from plays where track='$track' and artist='$artist'";
 $result = $connect->query($query);
 if ($result->num_rows > 0) {
-  // output data of each row from $result
   while($row = $result->fetch_assoc()) {
     echo '<tr><td>First play:</td><td>' . $row['first'] . '</td></tr>';
     echo '<tr><td>Latest play:</td><td>' . $row['last'] . '</td></tr>';
@@ -51,20 +33,7 @@ if ($result->num_rows > 0) {
 else {
   echo '0 results';
 }
-/*
-$query="select max(dt) as dt from plays where track='$track' and artist='$artist'";
-$result = $connect->query($query);
-if ($result->num_rows > 0) {
-  // output data of each row from $result
-  while($row = $result->fetch_assoc()) {
-    echo '<tr><td>Latest play:</td><td>' . $row['dt'] . '</td></tr>';
-  }
-}
-else {
-  echo '0 results';
-}
 
-*/
 echo '</table>';
 $result=$connect->query("select count(*) as count, year(dt) as year from plays where track='$track' and artist='$artist' group by year order by year");
 if ($result->num_rows > 0) {

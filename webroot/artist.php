@@ -3,30 +3,26 @@ $artist=$_GET['artist'];
 define( 'MUSICSTATS', true );
 include 'header.php';
 include 'dbconnect.php';
+include 'queryartistsong.php';
 ?>
 <h2><?php echo $artist . "</h2>";
 
 echo '<table>';
 
 $query="select count(*) as plays from plays where artist='$artist'";
-#$query="select rank,plays from mostplayedrankings where track='$track' and artist='$artist'";
 $result = $connect->query($query);
 if ($result->num_rows > 0) {
-  // output data of each row from $result
   while($row = $result->fetch_assoc()) {
     echo '<tr><td><b>Total plays: </td><td>' . $row['plays'] . '</b></td></tr>';
-#    echo '<tr><td>Overall ranking: </td><td>' . $row['rank'] . '</tr></tr>';
   }
 }
 else {
   echo '0 results';
 }
 
-
 $query="select min(dt) as first,max(dt) as last from plays where artist='$artist'";
 $result = $connect->query($query);
 if ($result->num_rows > 0) {
-  // output data of each row from $result
   while($row = $result->fetch_assoc()) {
     echo '<tr><td>First play:</td><td>' . $row['first'] . '</td></tr>';
     echo '<tr><td>Latest play:</td><td>' . $row['last'] . '</td></tr>';
@@ -50,30 +46,7 @@ if ($result->num_rows > 0) {
 ?>
 <h2>Most-played songs by <?php echo $artist . "</h2>";
 
-$query = "select count(*) as count, track from plays where artist='$artist' group by 2 order by 1 desc";
+queryartistsong("select count(*) as count, track from plays where artist='$artist' group by 2 order by 1 desc"); 
 
-$result = $connect->query($query);
-echo '<table>';
-// if the $result contains at least one row
-$rank=0;
-if ($result->num_rows > 0) {
-  // output data of each row from $result
-  while($row = $result->fetch_assoc()) {
-    $rank++;
-    //echo '<tr><td>'. $rank . '</td><td>' . $row['count']. '</td><td>'. $row['artist']. '</td><td>'. $row['track'] . '</td></tr>';
-
-echo '<tr><td>'. $rank . '</td><td>' . $row['count']. '</td><td><a href="track.php?artist=' . urlencode($artist) . '&track=' . urlencode($row['track']) . '">' . $row['track'] . '</a></td></tr>';
-
-
-  }
-echo '</table>';
-}
-else {
-  echo '0 results';
-}
-
-
-
-
-?>
+$conn->close(); ?>
 </body></html>
