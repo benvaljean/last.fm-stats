@@ -1,11 +1,11 @@
 <?php
-$artist=$_GET['artist'];
+$artist=addslashes($_GET['artist']);
 define( 'MUSICSTATS', true );
 include 'header.php';
 include 'dbconnect.php';
 include 'queryartistsong.php';
 ?>
-<h2><?php echo $artist . "</h2>";
+<h2><?php echo stripslashes($artist) . "</h2>";
 
 echo '<table>';
 

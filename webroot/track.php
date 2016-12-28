@@ -2,11 +2,11 @@
 define( 'MUSICSTATS', true );
 include 'dbconnect.php';
 include 'header.php';
-$track=$_GET['track'];
+$track=addslashes($_GET['track']);
 $artist=$_GET['artist'];
 define( 'MUSICSTATS', true );
 
-echo '<h2>' . $artist . ' - ' . $track . '</h2>';
+echo '<h2>' . $artist . ' - ' . stripslashes($track) . '</h2>';
 
 echo '<table>';
 
