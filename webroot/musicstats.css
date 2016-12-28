@@ -5,6 +5,7 @@ body {
                         font: 80% Tahoma;
                         font-size: 0.75em;
                         width: 900px;
+                        line-height: 2;
 }
 
 a {
@@ -65,14 +66,28 @@ img.upperleft {
 input[type=text] {
     font-family: tahoma, arial, helvetica, sans-serif;
     color: white;
-    width: 250;
     box-sizing: border-box;
     border: 2px solid #9BCDFF;
     border-radius: 4px;
     background-color: #004080;
-    background-image: url('https://openclipart.org/download/185356/1382519138.svg');
-    background-size: contain;
-    background-position: 5px 5px; 
-    background-repeat: no-repeat;
-    padding: 5px 5px 5px 25px;
+    padding: 5px 5px 5px 5px;
+    
+}
+
+.searchform {
+   background-image: url('https://openclipart.org/download/185356/1382519138.svg');
+   background-size: contain;
+   background-position: 5px 5px; 
+   background-repeat: no-repeat;
+   width: 250;
+   padding: 5px 5px 5px 25px;
+}
+
+.alignleft {
+	float: left;
+	text-align: left
+}
+.alignright {
+	float: right;
+	text-align: right
 }
