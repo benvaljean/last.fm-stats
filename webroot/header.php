@@ -14,6 +14,9 @@ $header = <<<END
 <center><h1>Music Stats</h1>
 <a href="/musicstats"><img class="upperleft" height="25" width="25" src="http://icons.iconarchive.com/icons/double-j-design/origami-colored-pencil/128/blue-home-icon.png">
 <a/>
+<form action="search.php">
+<input class="upperright" type="text" name="q" placeholder="Search..">
+</form>
 END;
 echo $header;
 ?>

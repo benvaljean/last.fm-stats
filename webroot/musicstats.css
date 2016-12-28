@@ -55,3 +55,24 @@ img.upperleft {
   top: 5;
   left: 5;
 }
+
+.upperright {
+  position: absolute;
+  top: 5;
+  left: 650;
+}
+
+input[type=text] {
+    font-family: tahoma, arial, helvetica, sans-serif;
+    color: white;
+    width: 250;
+    box-sizing: border-box;
+    border: 2px solid #9BCDFF;
+    border-radius: 4px;
+    background-color: #004080;
+    background-image: url('https://openclipart.org/download/185356/1382519138.svg');
+    background-size: contain;
+    background-position: 5px 5px; 
+    background-repeat: no-repeat;
+    padding: 5px 5px 5px 25px;
+}

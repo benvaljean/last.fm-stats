@@ -5,23 +5,18 @@ if( !defined( 'MUSICSTATS' ) ) {
 }
 
 
-function queryartistsong($query)
+function queryartistsong($query,$rankingformat = true)
 {
 	include 'dbconnect.php';
         $result = $connect->query($query);
-
-        // if the $result contains at least one row
         $rank=0;
         if ($result->num_rows > 0) {
-          // output data of each row from $result
-          echo '<table>';
+          echo '<table><tr>';
           while($row = $result->fetch_assoc()) {
             $rank++;
-            //echo '<tr><td>'. $rank . '</td><td>' . $row['count']. '</td><td>'. $row['artist']. '</td><td>'. $row['track'] . '</td></tr>';
 
-        echo '<tr><td>'. $rank . '</td><td>' . $row['count']. '</td><td><a href="artist.php?artist=' . $row['artist']. '">' . $row['artist'] . '</a></td><td><a href="track.php?artist=' . urlencode($row['artist']) . '&track=' . urlencode($row['track']) . '">' . $row['track'] . '</a></td></tr>';
-
-
+            if($rankingformat == true) { echo '<td>'. $rank . '</td>'; }
+            echo '<td>' . $row['count']. '</td><td><a href="artist.php?artist=' . urlencode($row['artist']). '">' . $row['artist'] . '</a></td><td><a href="track.php?artist=' . urlencode($row['artist']) . '&track=' . urlencode($row['track']) . '">' . $row['track'] . '</a></td></tr>';
           }
           echo '</table>';
         }
