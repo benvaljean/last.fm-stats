@@ -1,4 +1,22 @@
-load data infile '/usr/local/importscrobbles/exported_tracks.txt' ignore into table playsimport fields terminated by '\t' lines terminated by '\n' (@epochtime,track,artist,album,trackmbid,artistmbid,albummbid) set dt = FROM_UNIXTIME( @epochtime );
+SET time_zone = '+00:00'; /* Ensure no risk of running in a foreign country and affected the interpreted TZ */
+
+LOAD DATA LOCAL INFILE 'exported_tracks.txt'
+IGNORE INTO TABLE playsimport
+FIELDS TERMINATED BY '\t'
+LINES TERMINATED BY '\n'
+(@epochtime,track,artist,album,trackmbid,artistmbid,albummbid)
+SET
+    lastfm_epoch = @epochtime,
+    lastfm_dt = FROM_UNIXTIME(@epochtime);
+    tz = 'Europe/London'
+    epoch_semantics = 'utc';
+
+/* When it Saigon use these values:
+tz = 'Asia/Ho_Chi_Minh';
+epoch_semantics = 'bad-local';
+/*
+
+/* Not used for the moment
 truncate mostplayedrankings;
 insert into mostplayedrankings (plays, track, artist) select count(1), track, artist from plays group by 2, 3 order by 1 desc;
 
