@@ -73,7 +73,7 @@ with middle_column:
         for row in plays_per_year.itertuples(index=False):
             year_column, records_column = st.columns((1, 1))
             year_column.page_link(
-                "pages/most-played-year.py",
+                "pages/most-played-range.py",
                 label=str(row.year),
                 query_params={"year": str(row.year)},
             )
