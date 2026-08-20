@@ -3,7 +3,7 @@
 import streamlit as st
 
 
-st.set_page_config(page_title="Last.fm statistics", page_icon="🎵", layout="wide")
+st.set_page_config(page_title="MusicStats NG", page_icon="🎵", layout="wide")
 
 
 @st.cache_data(ttl=300)
@@ -22,7 +22,8 @@ def show_database_error(error: Exception) -> None:
     st.exception(error)
 
 
-st.title("Last.fm statistics")
+st.title("MusicStats NG")
+st.page_link("pages/everything.py", label="Browse every play")
 
 try:
     plays_per_year = query("""
@@ -40,10 +41,10 @@ st.subheader("Plays per year")
 # Streamlit dataframes cannot contain st.page_link widgets.  This small
 # two-column table keeps each year as a native Streamlit page link.
 
-_, year_table, _ = st.columns([1, 2, 1])
+_, year_table, _ = st.columns([1, 2, 1], gap=None)
 
 with year_table:
-    year_column, records_column = st.columns((1, 1))
+    year_column, records_column = st.columns((1, 1), gap=None)
     year_column.markdown("**Year**")
     records_column.markdown("**Records**")
     for row in plays_per_year.itertuples(index=False):
