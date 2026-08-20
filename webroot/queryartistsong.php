@@ -15,7 +15,16 @@ function queryartistsong($query,$rankingformat = true,$dateformat = false)
             $rank++;
             if($rankingformat == true) { echo '<td>'. $rank . '</td>'; }
             if($dateformat == true) { echo '<td>'. $row['dt'] . '</td>'; }
-            echo '<td>' . $row['count']. '</td><td><a href="artist.php?artist=' . urlencode($row['artist']). '">' . $row['artist'] . '</a></td><td><a href="track.php?artist=' . urlencode($row['artist']) . '&track=' . urlencode($row['track']) . '">' . $row['track'] . '</a></td></tr>';
+            if (isset($row['artist'])) {
+              echo '<td>' . $row['count']. '</td><td><a href="artist.php?artist='. urlencode($row['artist']). '">' . $row['artist']
+              . '</a></td>';
+            }
+            if (isset($row['track'])) {
+              echo '<td><a href="track.php?artist=' . urlencode($row['artist'])
+                  . '&track=' . urlencode($row['track']) . '">' . $row['track'] . '</a></td>';
+            }
+            echo '</tr>';
+
           }
           echo '</table>';
         }

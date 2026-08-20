@@ -16,7 +16,7 @@ else {
 }
 ?>
 
-<div class="alignleft">Last scrobble: <?php echo $latest; ?>  <a href="http://jessica.rabbit.name/musicstats/scrobbles.php?latest=true">Latest scrobbles</a></div>
+<div class="alignleft">Last scrobble: <?php echo $latest; ?>  <a href="scrobbles.php?latest=true">Latest scrobbles</a></div>
 <div class="alignright">
 Last <a href="lastxmths.php?months=3">3</a> | <a href="lastxmths.php?months=6">6</a> | <a href="lastxmths.php?months=12">12</a> | <a href="lastxmths.php?months=18">18</a> | <a href="lastxmths.php?months=24">24</a> | <a href="lastxmths.php?months=48">48</a> | <a href="lastxmths.php?months=60">60</a> | <a href="lastxmths.php?months=120">120</a> months
 

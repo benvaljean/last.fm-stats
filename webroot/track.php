@@ -4,13 +4,12 @@ include 'dbconnect.php';
 include 'header.php';
 $track=addslashes($_GET['track']);
 $artist=$_GET['artist'];
-define( 'MUSICSTATS', true );
 
 echo '<h2>' . $artist . ' - ' . stripslashes($track) . '</h2>';
 
 echo '<table>';
 
-$query="select rank,plays from mostplayedrankings where track='$track' and artist='$artist'";
+$query="select `rank`,`plays` from mostplayedrankings where track='$track' and artist='$artist'";
 $result = $connect->query($query);
 if ($result->num_rows > 0) {
   while($row = $result->fetch_assoc()) {

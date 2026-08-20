@@ -46,7 +46,7 @@ if ($result->num_rows > 0) {
 ?>
 <h2>Most-played songs by <?php echo $artist . "</h2>";
 
-queryartistsong("select count(*) as count, track from plays where artist='$artist' group by 2 order by 1 desc"); 
+queryartistsong("select count(*) as count, artist, track from plays where artist='$artist' group by artist, track order by count desc"); 
 
 $conn->close(); ?>
 </body></html>
