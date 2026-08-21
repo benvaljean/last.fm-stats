@@ -4,6 +4,13 @@ from calendar import month_name
 
 import streamlit as st
 
+st.markdown("""
+<style>
+.st-key-month-table {
+    line-height: 0.1 !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 st.set_page_config(page_title="Most-played range", page_icon="🎵", layout="wide")
 
@@ -50,11 +57,26 @@ if month is not None:
     where_clause += " AND MONTH(dt) = :month"
     title = f"Most-played music in {month_name[month]} {year}"
 
+st.markdown("""
+<style>
+[data-testid="stPageLink"] {
+    margin-top: -0.35rem;
+    margin-bottom: -0.35rem;
+}
+
+[data-testid="stPageLink"] a {
+    padding-top: 0.1rem;
+    padding-bottom: 0.1rem;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.title(title)
-st.page_link(
-    "pages/most-played-year.py",
-    label=f"← {year} overview",
-    query_params={"year": str(year)},
+if month is True:
+    st.page_link(
+        "pages/most-played-range.py",
+        label=f"← {year} overview",
+        query_params={"year": str(year)},
 )
 
 try:
@@ -102,22 +124,27 @@ except Exception as error:
 if month is None:
     st.subheader("Plays by month")
 
-    month_column, records_column = st.columns((1, 1), gap=None)
-    month_column.markdown("**Month**")
-    records_column.markdown("**Records**")
+    _, middle_column, _ = st.columns([1, 2, 1], gap=None)
 
-    for row in plays_per_month.itertuples(index=False):
-        month_column, records_column = st.columns((1, 1), gap=None)
+    with middle_column:
+        month_table = st.container(key="month-table")
+        with month_table:
+            month_column, records_column = st.columns((1, 1), gap=None)
+            month_column.markdown("**Month**")
+            records_column.markdown("**Records**")
 
-        month_column.page_link(
-            "pages/most-played-range.py",
-            label=row.month,
-            query_params={
-                "year": str(year),
-                "month": str(row.month_number),
-            },
-        )
-        records_column.write(f"{row.records:,}")
+            for row in plays_per_month.itertuples(index=False):
+                month_column, records_column = st.columns((1, 1), gap=None)
+
+                month_column.page_link(
+                    "pages/most-played-range.py",
+                    label=row.month,
+                    query_params={
+                        "year": str(year),
+                        "month": str(row.month_number),
+                    },
+                )
+                records_column.write(f"{row.records:,}")
 
 st.subheader("Most-played songs")
 st.dataframe(most_played_songs, hide_index=True, width=650, height="content")
