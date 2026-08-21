@@ -7,7 +7,9 @@ if( !defined( 'MUSICSTATS' ) ) {
 function queryartistsong($query,$rankingformat = true,$dateformat = false)
 {
 		include 'dbconnect.php';
+        $start = microtime(true);
         $result = $connect->query($query);
+        $queryTime = microtime(true) - $start;
         $rank=0;
         if ($result->num_rows > 0) {
           echo '<table><tr>';
@@ -15,9 +17,9 @@ function queryartistsong($query,$rankingformat = true,$dateformat = false)
             $rank++;
             if($rankingformat == true) { echo '<td>'. $rank . '</td>'; }
             if($dateformat == true) { echo '<td>'. $row['dt'] . '</td>'; }
+            if(isset($row['count'])) { echo '<td>' . $row['count']. '</td>'; }
             if (isset($row['artist'])) {
-              echo '<td>' . $row['count']. '</td><td><a href="artist.php?artist='. urlencode($row['artist']). '">' . $row['artist']
-              . '</a></td>';
+              echo '<td><a href="artist.php?artist='. urlencode($row['artist']). '">' . $row['artist'] . '</a></td>';
             }
             if (isset($row['track'])) {
               echo '<td><a href="track.php?artist=' . urlencode($row['artist'])
@@ -27,6 +29,8 @@ function queryartistsong($query,$rankingformat = true,$dateformat = false)
 
           }
           echo '</table>';
+          $totalTime = microtime(true) - $start;
+          printf("Query: %.4f sec, total: %.4f sec\n", $queryTime, $totalTime);
         }
         else {
           echo '0 results';

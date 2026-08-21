@@ -4,12 +4,15 @@ include 'dbconnect.php';
 include 'header.php';
 
 $year=$_GET['year'];
-$month=$_GET['month'];
-if (strlen($month) == 0){
+$monthtext="";
+
+if (!isset($_GET['month'])){
 //year mode
   $doyear=1;
   $criteria="year(dt)=$year";
 } else {
+  $doyear=0;
+  $month=$_GET['month'];
   $criteria="year(dt)=$year and month(dt)=$month";
   $monthtext=date("F", mktime(0, 0, 0, $month));
 }
@@ -19,7 +22,7 @@ if (strlen($month) == 0){
 <?php
 
 if ($doyear==1) {
-  $query="select month(dt) as monthnumeric, monthname(dt) as month, count(1) as count from plays where year(dt)=$year group by month(dt) order by month(dt) asc";
+  $query="select month(dt) as monthnumeric, monthname(dt) as month, count(1) as count from plays where year(dt)=$year group by monthnumeric, month order by month(dt) asc;";
   $result = $connect->query($query);
   if ($result->num_rows > 0) {
       echo '<h2>Month</h2><table>';

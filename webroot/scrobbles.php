@@ -4,8 +4,8 @@ include 'queryartistsong.php';
 include 'dbconnect.php';
 include 'header.php';
 $latest=$_GET['latest'];
-$start=$_GET['start'];
-$end=$_GET['end'];
+$start=$_GET['start']?? '';
+$end=$_GET['end']?? '';
 
 $scrobbles = 250;
 
@@ -21,5 +21,5 @@ else
 	queryscrobblesrange($start,$end);
 }
 
-$conn->close(); ?>
+?>
 </html>

@@ -48,5 +48,5 @@ if ($result->num_rows > 0) {
 
 queryartistsong("select count(*) as count, artist, track from plays where artist='$artist' group by artist, track order by count desc"); 
 
-$conn->close(); ?>
+?>
 </body></html>
