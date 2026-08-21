@@ -61,5 +61,4 @@ else {
 ?>
 </table>
 
-<?php $conn->close(); ?>
 </html>

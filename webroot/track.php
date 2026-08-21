@@ -48,13 +48,17 @@ if ($result->num_rows > 0) {
 ?>
 <h2>Play history</h2>
 <?php
+$start = microtime(true);
 $result=$connect->query("select dt,oldartist,oldtrack from plays where track='$track' and artist='$artist' order by dt");
+$queryTime = microtime(true) - $start;
 if ($result->num_rows > 0) {
         echo '<table>';
   while($row = $result->fetch_assoc()) {
       echo '<tr><td>' . $row['dt'] . '</td><td>' . $row['oldartist'] . '</td><td>' . $row['oldtrack'] . '</td></tr>';
     }
      echo '</table>';
+     $totalTime = microtime(true) - $start;
+     printf("Query: %.4f sec, total: %.4f sec\n", $queryTime, $totalTime);
   }
   else {
     echo '0 results';

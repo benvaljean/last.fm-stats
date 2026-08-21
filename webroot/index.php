@@ -49,5 +49,4 @@ else {
 <h2>Most played artists</h2>
 <?php queryartistsong("select count(*) as count, artist from plays group by 2 order by 1 desc limit 100"); ?>
 
-<?php $conn->close(); ?>
 </html>
