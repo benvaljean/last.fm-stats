@@ -27,7 +27,7 @@ from datetime import date, timedelta
 from optparse import OptionParser
 
 #forked from:  __version__ = '0.0.4'
-__version__ = '0.1.22'
+__version__ = '0.2.0'
 
 #0.1.x
 #Add reliable exporting from the last sucessful export
@@ -56,7 +56,7 @@ def get_options(parser):
         infotype = "bannedtracks"
     else:
         infotype = "recenttracks"
-         
+
     return options.username, options.outfile, options.startpage, options.server, infotype
 
 def connect_server(server, username, startpage, sleep_func=time.sleep, tracktype='recenttracks'):
@@ -70,14 +70,14 @@ def connect_server(server, username, startpage, sleep_func=time.sleep, tracktype
                     limit=200)
 
     elif server == "last.fm":
-	start = 'from'
+    start = 'from'
         baseurl = 'http://ws.audioscrobbler.com/2.0/?'
         urlvars = dict(method='user.get%s' % tracktype,
                     api_key='e38cc7822bd7476fe4083e36ee69748e',
                     user=username,
                     page=startpage,
-                    limit=50)
-	print urlvars
+                    limit=250)
+    print urlvars
     else:
         if server[:7] != 'http://':
             server = 'http://%s' % server
@@ -88,7 +88,8 @@ def connect_server(server, username, startpage, sleep_func=time.sleep, tracktype
                     page=startpage,
                     limit=200)
 
-    url = baseurl + urllib.urlencode(urlvars) + '&from=%0d' % time.mktime(scrobblesfrom.timetuple()) 
+    url = baseurl + urllib.urlencode(urlvars) + '&from=%0d' % time.mktime(scrobblesfrom.timetuple())
+    # url = baseurl + urllib.urlencode(urlvars) # use for brand new setup with no file
     print url
     for interval in (1, 5, 10, 62):
         try:
@@ -171,7 +172,7 @@ def get_tracks(server, username, startpage=1, sleep_func=time.sleep, tracktype='
             response =  connect_server(server, username, page, sleep_func, tracktype)
 
         tracklist = get_tracklist(response)
-		
+
         tracks = []
         for trackelement in tracklist:
             # do not export the currently playing track.
@@ -181,7 +182,7 @@ def get_tracks(server, username, startpage=1, sleep_func=time.sleep, tracktype='
         yield page, totalpages, tracks
 
         page += 1
-        sleep_func(.5)
+        sleep_func(1)
 
 def main(server, username, startpage, outfile, infotype='recenttracks'):
     trackdict = dict()
@@ -204,23 +205,23 @@ def main(server, username, startpage, outfile, infotype='recenttracks'):
         raise
     finally:
         with open(outfile, 'a') as outfileobj:
-		tracks = sorted(trackdict.values(), reverse=True)
-		write_tracks(tracks, outfileobj)
-		print "Wrote page %s-%s of %s to file %s" % (startpage, page, totalpages, outfile)
-		#Confirm last run
-		with open (lastrunfilename, "w") as myfile:
-			myfile.write(time.strftime("%Y-%m-%d %H:%M:%S"))	
+        tracks = sorted(trackdict.values(), reverse=True)
+        write_tracks(tracks, outfileobj)
+        print "Wrote page %s-%s of %s to file %s" % (startpage, page, totalpages, outfile)
+        #Confirm last run
+        with open (lastrunfilename, "w") as myfile:
+            myfile.write(time.strftime("%Y-%m-%d %H:%M:%S"))
 
 
 if __name__ == "__main__":
-	parser = OptionParser()
-	username, outfile, startpage, server, infotype = get_options(parser)
-	#Get lastrun time
-	global scrobblesfrom
-	global lastrunfilename
-	lastrunfilename = sys.path[0] + '/' + __file__ + '.' + username + '.lastrun'
-	with open (lastrunfilename, "r") as myfile:
-        	lastrun=myfile.read().replace('\n', '')	
-	scrobblesfrom = datetime.datetime.strptime(lastrun,'%Y-%m-%d %H:%M:%S') - timedelta(days=1) 
-	print "Last run read as %s , scrobblesfrom is: %s" %(lastrun, scrobblesfrom)
-	main(server, username, startpage, outfile, infotype)
+    parser = OptionParser()
+    username, outfile, startpage, server, infotype = get_options(parser)
+    #Get lastrun time
+    global scrobblesfrom
+    global lastrunfilename
+    lastrunfilename = sys.path[0] + '/' + __file__ + '.' + username + '.lastrun'
+    with open (lastrunfilename, "r") as myfile:
+        lastrun=myfile.read().replace('\n', '')
+    scrobblesfrom = datetime.datetime.strptime(lastrun,'%Y-%m-%d %H:%M:%S') - timedelta(days=1)
+    print "Last run read as %s , scrobblesfrom is: %s" %(lastrun, scrobblesfrom)
+    main(server, username, startpage, outfile, infotype)
