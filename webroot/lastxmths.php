@@ -3,11 +3,11 @@ define( 'MUSICSTATS', true );
 include 'queryartistsong.php';
 include 'dbconnect.php';
 include 'header.php';
-$months=$_GET['months'];
+$months=filter_input(INPUT_GET, 'months', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: 1;
 ?>
 <h2>Most-played songs last <?php echo $months; ?> months</h2>
-<?php queryartistsong("select count(*) as count, artist, track from plays where dt>=(CURRENT_DATE - INTERVAL $months MONTH) group by 2, 3 order by 1 desc limit 100") ?>
+<?php queryartistsong('SELECT COUNT(*) AS count, artist, track FROM plays WHERE dt >= (CURRENT_DATE - INTERVAL ? MONTH) GROUP BY 2, 3 ORDER BY 1 DESC LIMIT 100', [$months]) ?>
 
 <h2>Most played artists last <?php echo $months; ?> months</h2>
-<?php queryartistsong("select count(*) as count, artist from plays where dt >=(CURRENT_DATE - INTERVAL $months MONTH) group by 2 order by 1 desc limit 50"); ?>
+<?php queryartistsong('SELECT COUNT(*) AS count, artist FROM plays WHERE dt >= (CURRENT_DATE - INTERVAL ? MONTH) GROUP BY 2 ORDER BY 1 DESC LIMIT 50', [$months]); ?>
 </html>

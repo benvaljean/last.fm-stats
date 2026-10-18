@@ -4,8 +4,7 @@ include 'dbconnect.php';
 include 'header.php';
 include 'queryartistsong.php';
 
-$query="select max(dt) as latest from plays";
-$result = $connect->query($query);
+$result = musicstats_query($connect, 'SELECT MAX(dt) AS latest FROM plays');
 if ($result->num_rows > 0) {
   while($row = $result->fetch_assoc()) {
     $latest = $row['latest'];
@@ -26,9 +25,7 @@ Last <a href="lastxmths.php?months=3">3</a> | <a href="lastxmths.php?months=6">6
 <?php
 
 
-$query="select extract(YEAR from dt) as year, count(1) as count from plays group by year order by year asc";
-
-$result = $connect->query($query);
+$result = musicstats_query($connect, 'SELECT EXTRACT(YEAR FROM dt) AS year, COUNT(1) AS count FROM plays GROUP BY year ORDER BY year ASC');
 
 $rank=0;
 if ($result->num_rows > 0) {
@@ -43,10 +40,10 @@ else {
 ?>
 </table>
 
-<h2>Most-played songs</h2>
-<?php queryartistsong("select count(*) as count, artist, track from plays group by 2, 3 order by 1 desc limit 200"); ?>
+<h2>Most-played songs test</h2>
+<?php queryartistsong('SELECT COUNT(*) AS count, artist, track FROM plays GROUP BY 2, 3 ORDER BY 1 DESC LIMIT 200'); ?>
 
 <h2>Most played artists</h2>
-<?php queryartistsong("select count(*) as count, artist from plays group by 2 order by 1 desc limit 100"); ?>
+<?php queryartistsong('SELECT COUNT(*) AS count, artist FROM plays GROUP BY 2 ORDER BY 1 DESC LIMIT 100'); ?>
 
 </html>

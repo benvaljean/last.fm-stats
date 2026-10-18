@@ -1,5 +1,5 @@
 <?php
-$artist=addslashes($_GET['artist']);
+$artist=$_GET['artist'] ?? '';
 define( 'MUSICSTATS', true );
 include 'header.php';
 include 'dbconnect.php';
@@ -9,8 +9,7 @@ include 'queryartistsong.php';
 
 echo '<table>';
 
-$query="select count(*) as plays from plays where artist='$artist'";
-$result = $connect->query($query);
+$result = musicstats_query($connect, 'SELECT COUNT(*) AS plays FROM plays WHERE artist = ?', [$artist]);
 if ($result->num_rows > 0) {
   while($row = $result->fetch_assoc()) {
     echo '<tr><td><b>Total plays: </td><td>' . $row['plays'] . '</b></td></tr>';
@@ -20,8 +19,7 @@ else {
   echo '0 results';
 }
 
-$query="select min(dt) as first,max(dt) as last from plays where artist='$artist'";
-$result = $connect->query($query);
+$result = musicstats_query($connect, 'SELECT MIN(dt) AS first, MAX(dt) AS last FROM plays WHERE artist = ?', [$artist]);
 if ($result->num_rows > 0) {
   while($row = $result->fetch_assoc()) {
     echo '<tr><td>First play:</td><td>' . $row['first'] . '</td></tr>';
@@ -32,7 +30,7 @@ else {
   echo '0 results';
 }
 echo '</table>';
-$result=$connect->query("select count(*) as count, year(dt) as year from plays where artist='$artist' group by year order by year");
+$result = musicstats_query($connect, 'SELECT COUNT(*) AS count, YEAR(dt) AS year FROM plays WHERE artist = ? GROUP BY year ORDER BY year', [$artist]);
 if ($result->num_rows > 0) {
 	echo '<h2>Plays by year</h2><table>';
   while($row = $result->fetch_assoc()) {
@@ -46,7 +44,7 @@ if ($result->num_rows > 0) {
 ?>
 <h2>Most-played songs by <?php echo $artist . "</h2>";
 
-queryartistsong("select count(*) as count, artist, track from plays where artist='$artist' group by artist, track order by count desc"); 
+queryartistsong('SELECT COUNT(*) AS count, artist, track FROM plays WHERE artist = ? GROUP BY artist, track ORDER BY count DESC', [$artist]);
 
 ?>
 </body></html>

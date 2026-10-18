@@ -4,11 +4,11 @@ if( !defined( 'MUSICSTATS' ) ) {
         die( 1 );
 }
 
-function queryartistsong($query,$rankingformat = true,$dateformat = false)
+function queryartistsong($query, array $params = [], $rankingformat = true, $dateformat = false)
 {
 		include 'dbconnect.php';
         $start = microtime(true);
-        $result = $connect->query($query);
+        $result = musicstats_query($connect, $query, $params);
         $queryTime = microtime(true) - $start;
         $rank=0;
         if ($result->num_rows > 0) {
@@ -39,11 +39,21 @@ function queryartistsong($query,$rankingformat = true,$dateformat = false)
 
 function queryscrobbleslatest($scrobbles)
 {
-	queryartistsong("(SELECT dt,artist,track FROM plays ORDER BY dt DESC LIMIT $scrobbles) ORDER BY dt ASC",false,true);
+	queryartistsong(
+        '(SELECT dt, artist, track FROM plays ORDER BY dt DESC LIMIT ?) ORDER BY dt ASC',
+        [$scrobbles],
+        false,
+        true
+    );
 }
 
 function queryscrobblesrange($start,$end)
 {
-	queryartistsong("select dt,artist,track from plays where dt >= '$start' and dt <= '$end' order by 1",false,true);
+	queryartistsong(
+        'SELECT dt, artist, track FROM plays WHERE dt >= ? AND dt <= ? ORDER BY 1',
+        [$start, $end],
+        false,
+        true
+    );
 }
 ?>

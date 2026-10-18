@@ -3,17 +3,27 @@ define( 'MUSICSTATS', true );
 include 'dbconnect.php';
 include 'header.php';
 
-$year=$_GET['year'];
+$year=filter_input(INPUT_GET, 'year', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 9999]]);
+if ($year === false || $year === null) {
+  http_response_code(400);
+  exit('A valid year is required.');
+}
 $monthtext="";
 
 if (!isset($_GET['month'])){
 //year mode
   $doyear=1;
-  $criteria="year(dt)=$year";
+  $criteria='YEAR(dt) = ?';
+  $criteriaParams=[$year];
 } else {
   $doyear=0;
-  $month=$_GET['month'];
-  $criteria="year(dt)=$year and month(dt)=$month";
+  $month=filter_input(INPUT_GET, 'month', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 12]]);
+  if ($month === false || $month === null) {
+    http_response_code(400);
+    exit('The month must be between 1 and 12.');
+  }
+  $criteria='YEAR(dt) = ? AND MONTH(dt) = ?';
+  $criteriaParams=[$year, $month];
   $monthtext=date("F", mktime(0, 0, 0, $month));
 }
 ?>
@@ -22,8 +32,7 @@ if (!isset($_GET['month'])){
 <?php
 
 if ($doyear==1) {
-  $query="select month(dt) as monthnumeric, monthname(dt) as month, count(1) as count from plays where year(dt)=$year group by monthnumeric, month order by month(dt) asc;";
-  $result = $connect->query($query);
+  $result = musicstats_query($connect, 'SELECT MONTH(dt) AS monthnumeric, MONTHNAME(dt) AS month, COUNT(1) AS count FROM plays WHERE YEAR(dt) = ? GROUP BY monthnumeric, month ORDER BY MONTH(dt) ASC', [$year]);
   if ($result->num_rows > 0) {
       echo '<h2>Month</h2><table>';
     while($row = $result->fetch_assoc()) {
@@ -37,15 +46,13 @@ if ($doyear==1) {
 }
 
 include 'queryartistsong.php';
-queryartistsong("select count(*) as count, artist, track from plays where $criteria group by 2, 3 order by 1 desc limit 50")
+queryartistsong("SELECT COUNT(*) AS count, artist, track FROM plays WHERE $criteria GROUP BY 2, 3 ORDER BY 1 DESC LIMIT 50", $criteriaParams)
 
 ?>
 <h2>Most played artists in <?php echo $monthtext . " " . $year; ?></h2>
 <table>
 <?php
-$query = "select count(*) as count, artist from plays where $criteria group by 2 order by 1 desc limit 25";
-
-$result = $connect->query($query);
+$result = musicstats_query($connect, "SELECT COUNT(*) AS count, artist FROM plays WHERE $criteria GROUP BY 2 ORDER BY 1 DESC LIMIT 25", $criteriaParams);
 
 $rank=0;
 if ($result->num_rows > 0) {

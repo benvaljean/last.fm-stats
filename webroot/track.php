@@ -2,15 +2,14 @@
 define( 'MUSICSTATS', true );
 include 'dbconnect.php';
 include 'header.php';
-$track=addslashes($_GET['track']);
-$artist=$_GET['artist'];
+$track=$_GET['track'] ?? '';
+$artist=$_GET['artist'] ?? '';
 
 echo '<h2>' . $artist . ' - ' . stripslashes($track) . '</h2>';
 
 echo '<table>';
 
-$query="select `rank`,`plays` from mostplayedrankings where track='$track' and artist='$artist'";
-$result = $connect->query($query);
+$result = musicstats_query($connect, 'SELECT `rank`, `plays` FROM mostplayedrankings WHERE track = ? AND artist = ?', [$track, $artist]);
 if ($result->num_rows > 0) {
   while($row = $result->fetch_assoc()) {
     echo '<tr><td><b>Total plays: </td><td>' . $row['plays'] . '</b></td></tr>';
@@ -21,8 +20,7 @@ else {
   echo '0 results';
 }
 
-$query="select min(dt) as first,max(dt) as last from plays where track='$track' and artist='$artist'";
-$result = $connect->query($query);
+$result = musicstats_query($connect, 'SELECT MIN(dt) AS first, MAX(dt) AS last FROM plays WHERE track = ? AND artist = ?', [$track, $artist]);
 if ($result->num_rows > 0) {
   while($row = $result->fetch_assoc()) {
     echo '<tr><td>First play:</td><td>' . $row['first'] . '</td></tr>';
@@ -34,7 +32,7 @@ else {
 }
 
 echo '</table>';
-$result=$connect->query("select count(*) as count, year(dt) as year from plays where track='$track' and artist='$artist' group by year order by year");
+$result = musicstats_query($connect, 'SELECT COUNT(*) AS count, YEAR(dt) AS year FROM plays WHERE track = ? AND artist = ? GROUP BY year ORDER BY year', [$track, $artist]);
 if ($result->num_rows > 0) {
 	echo '<h2>Plays by year</h2><table>';
   while($row = $result->fetch_assoc()) {
@@ -49,7 +47,7 @@ if ($result->num_rows > 0) {
 <h2>Play history</h2>
 <?php
 $start = microtime(true);
-$result=$connect->query("select dt,oldartist,oldtrack from plays where track='$track' and artist='$artist' order by dt");
+$result = musicstats_query($connect, 'SELECT dt, oldartist, oldtrack FROM plays WHERE track = ? AND artist = ? ORDER BY dt', [$track, $artist]);
 $queryTime = microtime(true) - $start;
 if ($result->num_rows > 0) {
         echo '<table>';
