@@ -1,0 +1,19 @@
+services:
+  legacy-php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ./webroot:/var/www/html:ro
+      # Keep the legacy source unchanged while supplying Docker-aware DB settings.
+      - ./docker/dbconnect.php:/var/www/html/dbconnect.php:ro
+    environment:
+      MUSICSTATS_DB_HOST: host.docker.internal
+      MUSICSTATS_DB_PORT: "3306"
+      MUSICSTATS_DB_NAME: ${MUSICSTATS_DB_NAME:-musicstats}
+      MUSICSTATS_DB_USER: ${MUSICSTATS_DB_USER:-musicstats}
+      MUSICSTATS_DB_PASSWORD: ${MUSICSTATS_DB_PASSWORD:?Set MUSICSTATS_DB_PASSWORD in your shell or .env file}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
