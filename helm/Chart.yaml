@@ -1,0 +1,10 @@
+apiVersion: v2
+name: musicstats
+description: Deploy the MusicStats PHP application and its MySQL database.
+type: application
+version: 0.1.0
+appVersion: "0.8.0"
+dependencies:
+  - name: mysql
+    version: 14.0.3
+    repository: oci://registry-1.docker.io/bitnamicharts

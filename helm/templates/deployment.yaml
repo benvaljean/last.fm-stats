@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "musicstats.fullname" . }}
+  labels:
+    {{- include "musicstats.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "musicstats.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "musicstats.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: musicstats
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "musicstats.fullname" . }}
+          env:
+            - name: MUSICSTATS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.credentialsSecretName }}
+                  key: MUSICSTATS_DB_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

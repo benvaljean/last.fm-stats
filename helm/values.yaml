@@ -1,0 +1,48 @@
+replicaCount: 1
+
+image:
+  repository: benvaljean/musicstats
+  tag: "0.8.2"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  tls: []
+  # Example:
+  # - secretName: musicstats-tls
+  #   hosts:
+  #     - musicstats.domain.example
+
+database:
+  name: musicstatslive
+  user: musicstats
+  # This name is deliberately stable because the MySQL dependency receives its
+  # values before parent chart templates are rendered.
+  credentialsSecretName: musicstats-db-credentials
+  password: ""
+
+resources: {}
+
+mysql:
+  architecture: standalone
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/mysql
+    tag: 9.4.0-debian-12-r1
+  auth:
+    database: musicstatslive
+    username: musicstats
+    # key "password" for the musicstats user
+    # key "mysql-root-password" for root
+    # key "MUSICSTATS_DB_PASSWORD" for the musicstats user
+    existingSecret: musicstats-db-credentials
+  primary:
+    persistence:
+      enabled: true
+      # k3s ships with this local-path provisioner by default.
+      storageClass: local-path
+      size: 128Mi
