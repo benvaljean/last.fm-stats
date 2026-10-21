@@ -33,7 +33,7 @@ importer:
   schedule: "0 3 * * *"
   image:
     repository: benvaljean/musicstats-import
-    tag: "0.1.0"
+    tag: "0.1.1"
     pullPolicy: IfNotPresent
   # Last.fm usernames are public; the database password remains in the Secret.
   lastfmUser: ""
@@ -55,6 +55,8 @@ mysql:
     # key "MUSICSTATS_DB_PASSWORD" for the musicstats user
     existingSecret: musicstats-db-credentials
   primary:
+    # Required by importscrobbles.sql, which uses LOAD DATA LOCAL INFILE.
+    extraFlags: "--local-infile=1"
     persistence:
       enabled: true
       # k3s ships with this local-path provisioner by default.
