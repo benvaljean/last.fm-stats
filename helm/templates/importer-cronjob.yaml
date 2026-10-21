@@ -1,0 +1,50 @@
+{{- if .Values.importer.enabled }}
+{{- if not .Values.importer.lastfmUser }}
+{{- fail "importer.lastfmUser is required when importer.enabled=true" }}
+{{- end }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "musicstats.fullname" . }}-import
+  labels:
+    {{- include "musicstats.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.importer.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels:
+            {{- include "musicstats.selectorLabels" . | nindent 12 }}
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: musicstats-import
+              image: "{{ .Values.importer.image.repository }}:{{ .Values.importer.image.tag }}"
+              imagePullPolicy: {{ .Values.importer.image.pullPolicy }}
+              envFrom:
+                - configMapRef:
+                    name: {{ include "musicstats.fullname" . }}
+              env:
+                - name: LASTFM_USER
+                  value: {{ .Values.importer.lastfmUser | quote }}
+                - name: MUSICSTATS_INITIAL_FROM_EPOCH
+                  value: {{ .Values.importer.initialFromEpoch | quote }}
+                - name: MUSICSTATS_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.database.credentialsSecretName }}
+                      key: MUSICSTATS_DB_PASSWORD
+              volumeMounts:
+                - name: work
+                  mountPath: /work
+              resources:
+                {{- toYaml .Values.importer.resources | nindent 16 }}
+          volumes:
+            - name: work
+              emptyDir: {}
+{{- end }}

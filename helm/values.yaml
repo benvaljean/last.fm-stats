@@ -27,6 +27,20 @@ database:
 
 resources: {}
 
+importer:
+  enabled: true
+  # Kubernetes CronJob schedule, in the controller's timezone.
+  schedule: "0 3 * * *"
+  image:
+    repository: benvaljean/musicstats-import
+    tag: "0.1.0"
+    pullPolicy: IfNotPresent
+  # Last.fm usernames are public; the database password remains in the Secret.
+  lastfmUser: ""
+  # Used only when playsimport is empty. Set this to limit an initial backfill.
+  initialFromEpoch: "0"
+  resources: {}
+
 mysql:
   architecture: standalone
   image:

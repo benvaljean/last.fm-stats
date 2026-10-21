@@ -20,7 +20,7 @@ Script for exporting tracks through audioscrobbler API.
 Usage: lastexport.py -u USER [-o OUTFILE] [-p STARTPAGE] [-s SERVER]
 """
 
-import urllib2, urllib, sys, time, re, datetime, time
+import urllib2, urllib, sys, time, re, datetime, time, os
 import xml.etree.ElementTree as ET
 from datetime import date, timedelta
 
@@ -45,6 +45,8 @@ def get_options(parser):
                       help="Server to fetch track info from, default is last.fm")
     parser.add_option("-t", "--type", dest="infotype", default="scrobbles",
                       help="Type of information to export, scrobbles|loved|banned, default is scrobbles")
+    parser.add_option("--from-epoch", dest="from_epoch", type="int", default=None,
+                      help="Unix timestamp from which to export; overrides the legacy .lastrun file")
     options, args = parser.parse_args()
 
     if not options.username:
@@ -57,7 +59,7 @@ def get_options(parser):
     else:
         infotype = "recenttracks"
 
-    return options.username, options.outfile, options.startpage, options.server, infotype
+    return options.username, options.outfile, options.startpage, options.server, infotype, options.from_epoch
 
 def connect_server(server, username, startpage, sleep_func=time.sleep, tracktype='recenttracks'):
     """ Connect to server and get a XML page."""
@@ -70,14 +72,13 @@ def connect_server(server, username, startpage, sleep_func=time.sleep, tracktype
                     limit=200)
 
     elif server == "last.fm":
-    start = 'from'
         baseurl = 'http://ws.audioscrobbler.com/2.0/?'
         urlvars = dict(method='user.get%s' % tracktype,
                     api_key='e38cc7822bd7476fe4083e36ee69748e',
                     user=username,
                     page=startpage,
                     limit=250)
-    print urlvars
+        print urlvars
     else:
         if server[:7] != 'http://':
             server = 'http://%s' % server
@@ -88,7 +89,12 @@ def connect_server(server, username, startpage, sleep_func=time.sleep, tracktype
                     page=startpage,
                     limit=200)
 
-    url = baseurl + urllib.urlencode(urlvars) + '&from=%0d' % time.mktime(scrobblesfrom.timetuple())
+    if scrobblesfromepoch is None:
+        fromepoch = time.mktime(scrobblesfrom.timetuple())
+    else:
+        # Preserve the caller's exact epoch, including across DST transitions.
+        fromepoch = scrobblesfromepoch
+    url = baseurl + urllib.urlencode(urlvars) + '&from=%0d' % fromepoch
     # url = baseurl + urllib.urlencode(urlvars) # use for brand new setup with no file
     print url
     for interval in (1, 5, 10, 62):
@@ -203,25 +209,37 @@ def main(server, username, startpage, outfile, infotype='recenttracks'):
         exit(e)
     except Exception:
         raise
-    finally:
+    else:
         with open(outfile, 'a') as outfileobj:
-        tracks = sorted(trackdict.values(), reverse=True)
-        write_tracks(tracks, outfileobj)
-        print "Wrote page %s-%s of %s to file %s" % (startpage, page, totalpages, outfile)
-        #Confirm last run
-        with open (lastrunfilename, "w") as myfile:
-            myfile.write(time.strftime("%Y-%m-%d %H:%M:%S"))
+            tracks = sorted(trackdict.values(), reverse=True)
+            write_tracks(tracks, outfileobj)
+            print "Wrote page %s-%s of %s to file %s" % (startpage, page, totalpages, outfile)
+        if update_lastrun:
+            # Keep the legacy cursor only for callers that did not supply --from-epoch.
+            with open(lastrunfilename, "w") as myfile:
+                myfile.write(time.strftime("%Y-%m-%d %H:%M:%S"))
 
 
 if __name__ == "__main__":
     parser = OptionParser()
-    username, outfile, startpage, server, infotype = get_options(parser)
+    username, outfile, startpage, server, infotype, from_epoch = get_options(parser)
     #Get lastrun time
     global scrobblesfrom
+    global scrobblesfromepoch
     global lastrunfilename
-    lastrunfilename = sys.path[0] + '/' + __file__ + '.' + username + '.lastrun'
-    with open (lastrunfilename, "r") as myfile:
-        lastrun=myfile.read().replace('\n', '')
-    scrobblesfrom = datetime.datetime.strptime(lastrun,'%Y-%m-%d %H:%M:%S') - timedelta(days=1)
-    print "Last run read as %s , scrobblesfrom is: %s" %(lastrun, scrobblesfrom)
+    global update_lastrun
+    lastrunfilename = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   'lastexport.py.' + username + '.lastrun')
+    if from_epoch is not None:
+        scrobblesfromepoch = from_epoch
+        scrobblesfrom = datetime.datetime.utcfromtimestamp(from_epoch)
+        update_lastrun = False
+        print "Using supplied from epoch %s (UTC %s)" % (from_epoch, scrobblesfrom)
+    else:
+        with open(lastrunfilename, "r") as myfile:
+            lastrun = myfile.read().replace('\n', '')
+        scrobblesfrom = datetime.datetime.strptime(lastrun,'%Y-%m-%d %H:%M:%S') - timedelta(days=1)
+        scrobblesfromepoch = None
+        update_lastrun = True
+        print "Last run read as %s, scrobblesfrom is: %s" % (lastrun, scrobblesfrom)
     main(server, username, startpage, outfile, infotype)
