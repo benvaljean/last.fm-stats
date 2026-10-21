@@ -33,11 +33,11 @@ spec:
                   key: MUSICSTATS_DB_PASSWORD
           readinessProbe:
             httpGet:
-              path: /
+              path: /healthz.html
               port: http
           livenessProbe:
             httpGet:
-              path: /
+              path: /healthz.html
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
