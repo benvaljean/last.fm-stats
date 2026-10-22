@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: benvaljean/musicstats
-  tag: "0.8.3"
+  tag: "0.8.4"
   pullPolicy: IfNotPresent
 
 service:
@@ -50,7 +50,7 @@ mysql:
   auth:
     database: musicstatslive
     username: musicstats
-    # key "password" for the musicstats user
+    # key "mysql-password" for the musicstats user
     # key "mysql-root-password" for root
     # key "MUSICSTATS_DB_PASSWORD" for the musicstats user
     existingSecret: musicstats-db-credentials
